@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
+import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 
 export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -29,5 +30,15 @@ export class InfraStack extends cdk.Stack {
         functionName: 'mycdkbanklamdafunction',
         role: bankrole,
       })
+
+      // API Gateway
+      const bankapigateway = new apigateway.LambdaRestApi(this, 'bankapigateway', {
+        handler: banklambda,
+        restApiName: 'bankingrestapi',
+        deploy: true,
+        proxy: false,
+      })
+      const bankstatus = bankapigateway.root.addResource('bankstatus');
+      bankstatus.addMethod('GET');
   }
 }
