@@ -4,13 +4,16 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
+import { RemovalPolicy } from 'aws-cdk-lib';
 
 export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
       // S3 Bucket
       const bankbucket = new s3.Bucket(this, 'bankbucket', {
-        bucketName: 'bankbucket-007'
+        bucketName: 'bankbucket-007',
+        removalPolicy: RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
       })
 
       // IAM Role
