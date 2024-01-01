@@ -11,7 +11,9 @@ export class InfraStack extends cdk.Stack {
       bucketName: 'demos3bucket2310199',
       versioned: true,
       publicReadAccess: false,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.DESTROY,  // Removal policy in cdk is known as Deletion Policy in CloudFormation. Both are same technically.
+      // Possible values for removal policy are destroy/retain/snapshot for most of the services default is destroy
+      // s3 has retain as default and rds as snapshot as default(For all database services default is mainly taking snapshot). 
       autoDeleteObjects: true
     })
     // The code that defines your stack goes here
