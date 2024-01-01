@@ -1,12 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { readFileSync } from 'fs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 export class WebserverStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-
-    // The code that defines your stack goes here
 
     // VPC & Subnets
     const myVPC = new ec2.Vpc(this, 'WebserverVPC', {
@@ -23,6 +22,19 @@ export class WebserverStack extends cdk.Stack {
       allowAllOutbound: true,
     });
 
-    mySG.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80), 'Allow all http traffic')
+    mySG.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80), 'Allow all http traffic');
+
+    // Create a EC2 Instance
+    const ec2machine = new ec2.Instance(this, 'myec2', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO) ,
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      vpc: myVPC,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      securityGroup: mySG,
+      // keyName: 'myKey', // to use ssh you have to allow port 22 in SG.
+    });
+    // UserData
+    const userData = readFileSync('./lib/userdata.sh', 'utf8');
+    ec2machine.addUserData(userData)
   }
 }
